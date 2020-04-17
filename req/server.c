@@ -43,16 +43,41 @@ void conv(char *msg)
             msg[i] = tolower(msg[i]);
 }
 
+
+
 void handler(int signum){
+
+    if(signum == SIGUSR1){
+
+        if (1){
+            conv(shmaddr->buff);
+
+            printf("\nData found---------------------------------- = %s\n",shmaddr->buff);
+
+            rcvfromClient = 1;
+            //kill(shmaddr->clientpid, SIGUSR2);
+        }
+        else{
+            printf("\nStill Nulllllllll");
+        }
+    }
+}
+
+void handlerrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr(int signum){
     printf("\n Ana gowa handler el server\n");
+    
 
     if (signum == SIGUSR1){
+        printf("\n ana received mn el client\n");
+        conv(shmaddr->buff);
+        printf("\nData found---------------------------------- = %s\n",shmaddr->buff);
+        printf("\nData found = %s\n",shmaddr->buff);
+
         /*if (shmaddr =! NULL){
         conv(shmaddr->buff);
 
         printf("\nData found---------------------------------- = %s\n",shmaddr->buff);
 
-        kill(shmaddr->clientpid,SIGUSR2);
         rcvfromClient = 1;
     }
         else{
@@ -69,9 +94,7 @@ int main()
     int shmid;
     key_t key = 5000;
 
-    // declaring the signal used by the client to inform the server that the client has write a msg 
-    // SIGUSR1 >>> Server
-    signal(SIGUSR1, handler);
+    
 
 
     // create shared memory segment
@@ -101,9 +124,15 @@ int main()
     // prcess id of server
     shmaddr->serverpid = srvPID;
 
+
+
+    // declaring the signal used by the client to inform the server that the client has write a msg 
+    // SIGUSR1 >>> Server
+    signal(SIGUSR1, handler);
+
     while(1){
+        //sleep(1);
         // read client input and process it
-        printf("\nData found = %s\n",shmaddr->buff);
 
         
         // conver the msg // processing

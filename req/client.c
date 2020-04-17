@@ -62,9 +62,7 @@ int main()
     int shmid;
     key_t key = 5000;
 
-    // declaring the signal used by the client to inform the server that the client has write a msg 
-    // SIGUSR2 >>> Client
-    signal(SIGUSR2, handler);
+    
 
 
     // create shared memory segment
@@ -92,11 +90,15 @@ int main()
     // prcess id of server
     shmaddr->clientpid = cliPID;
 
+
+    // declaring the signal used by the client to inform the server that the client has write a msg 
+    // SIGUSR2 >>> Client
+    signal(SIGUSR2, handler);
+
     while(1){
         printf("Enter your message: ");
         scanf("%s", shmaddr->buff);
         kill(shmaddr->serverpid , SIGUSR1);
-
 
     }
     
