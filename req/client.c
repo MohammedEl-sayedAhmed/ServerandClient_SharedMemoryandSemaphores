@@ -16,6 +16,7 @@
 ///////   G L O B A L S  \\\\\\/
 ///////   /////////////  \\\\\\/
 int rcvfromServer = 0;
+int isExit = 0;
 
 
 struct sharedMemory { 
@@ -28,33 +29,22 @@ struct sharedMemory* shmaddr;
 
 
 
-
-
-
-/* convert upper case to lower case or vise versa */
-/*void conv(char *msg)
-{
-    int size = strlen(msg);
-    for (int i = 0; i < size; i++)
-        if (islower(msg[i]))
-            msg[i] = toupper(msg[i]);
-        else if (isupper(msg[i]))
-            msg[i] = tolower(msg[i]);
-}*/
-
 void handler(int signum){
 
     if (signum == SIGUSR2){
-        printf("\nana gowa handleer el client\n");
+
+        printf("\nThe server has finished processing tha data  = %s\n",shmaddr->buff);
+        rcvfromServer = 1;
     }
+}
+
+void exitHandler(int signum){
+    
+    isExit = 1;
 }
     
 
         
-
-    
-
-
 int main()
 {
     // Client code
@@ -63,8 +53,6 @@ int main()
     key_t key = 5000;
 
     
-
-
     // create shared memory segment
     shmid = shmget(key, sizeof(struct sharedMemory), IPC_CREAT|0644);
 
@@ -94,19 +82,41 @@ int main()
     // declaring the signal used by the client to inform the server that the client has write a msg 
     // SIGUSR2 >>> Client
     signal(SIGUSR2, handler);
+    signal(SIGINT,exitHandler);
 
-    while(1){
-        printf("Enter your message: ");
-        scanf("%s", shmaddr->buff);
+    printf("Enter your message: ");
+
+
+    while(isExit ==0){
+        //sleep(2);
+        char temp[100]; 
+
+        scanf("%s", temp);
+        //scanf("%s", shmaddr->buff);
+
+        if(!strcmp((char*) temp, "^C")){
+            printf("\nbahbd nooooowwwww\n");
+            raise(SIGINT);
+        }
+        else{
+            strcpy(shmaddr->buff, temp);
+        }
+
         kill(shmaddr->serverpid , SIGUSR1);
-
+        while (rcvfromServer != 1){
+            
+        }
+        rcvfromServer = 0;
+        printf("Enter your message: ");
     }
-    
-
-    // send signal :: client wrote data on shared memory
 
     // detach client
-    shmdt((void*)shmaddr); 
+    shmdt((void*)shmaddr);
+    // clear resources
+    shmctl(shmid, IPC_RMID, NULL);
+    exit(0);
     
+   // if(!strcmp((char*) shmaddr, "quit")) >>> hay2fl
+    strcpy((char*) shmaddr, "Initial string!");
     return 0;
 }

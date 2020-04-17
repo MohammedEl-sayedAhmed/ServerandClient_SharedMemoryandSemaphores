@@ -17,6 +17,7 @@
 ///////   /////////////  \\\\\\/
 
 int rcvfromClient = 0;
+int isExit = 0;
 
 
 struct sharedMemory { 
@@ -49,43 +50,23 @@ void handler(int signum){
 
     if(signum == SIGUSR1){
 
-        if (1){
-            conv(shmaddr->buff);
+        conv(shmaddr->buff);
 
-            printf("\nData found---------------------------------- = %s\n",shmaddr->buff);
+        printf("\nData found---------------------------------- = %s\n",shmaddr->buff);
 
-            rcvfromClient = 1;
-            //kill(shmaddr->clientpid, SIGUSR2);
-        }
-        else{
-            printf("\nStill Nulllllllll");
-        }
+        //rcvfromClient = 1;
+        kill(shmaddr->clientpid, SIGUSR2);
+                 
     }
 }
 
-void handlerrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr(int signum){
-    printf("\n Ana gowa handler el server\n");
+void exitHandler(int signum){
+     
+    isExit = 1;
+    
+}
     
 
-    if (signum == SIGUSR1){
-        printf("\n ana received mn el client\n");
-        conv(shmaddr->buff);
-        printf("\nData found---------------------------------- = %s\n",shmaddr->buff);
-        printf("\nData found = %s\n",shmaddr->buff);
-
-        /*if (shmaddr =! NULL){
-        conv(shmaddr->buff);
-
-        printf("\nData found---------------------------------- = %s\n",shmaddr->buff);
-
-        rcvfromClient = 1;
-    }
-        else{
-            printf("\nStill Nulllllllll");
-        }*/
-
-    }
-}
 
 int main()
 {
@@ -118,6 +99,7 @@ int main()
         exit(-1);
     }
     printf("\nShared memory -- Server attached at address %x\n", shmaddr);
+    printf("\nData found---------------------------------- = %s\n",shmaddr->buff);
 
     //sleep(10);
 
@@ -129,26 +111,16 @@ int main()
     // declaring the signal used by the client to inform the server that the client has write a msg 
     // SIGUSR1 >>> Server
     signal(SIGUSR1, handler);
-
-    while(1){
-        //sleep(1);
-        // read client input and process it
-
-        
-        // conver the msg // processing
-        //conv(shmaddr->buff);
-        //kill(shmaddr->clientpid, SIGUSR2);
+    signal(SIGINT,exitHandler);
 
 
-    }
-    
-
-    
-    // send signal :: send to client that msg finished processing
-
+    while(isExit ==0){}
 
     // detach server
-    shmdt((void*)shmaddr); 
+    shmdt((void*)shmaddr);
+    // clear resources
+    shmctl(shmid, IPC_RMID, NULL);
+    exit(0);
 
     return 0;
 }
