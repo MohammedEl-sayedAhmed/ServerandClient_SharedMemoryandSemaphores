@@ -12,18 +12,25 @@
 #include <sys/file.h>
 #include <sys/shm.h>
 
+///////   /////////////  \\\\\\/
+///////   G L O B A L S  \\\\\\/
+///////   /////////////  \\\\\\/
+
+int rcvfromClient = 0;
 
 
-#define FILLED 0 
-#define Ready 1 
-#define NotReady -1 
+struct sharedMemory { 
+
+    char buff[100]; 
+    pid_t clientpid, serverpid; 
+}; 
+
+struct sharedMemory* shmaddr = NULL;
 
 
-struct msgbuff
-{
-    long mtype;
-    char mtext[70];
-};
+
+
+
 
 /* convert upper case to lower case or vise versa */
 void conv(char *msg)
@@ -36,60 +43,39 @@ void conv(char *msg)
             msg[i] = tolower(msg[i]);
 }
 
+void handler(int signum){
+    printf("\n Ana gowa handler el server\n");
 
-void reader(int shmid)
-{
-    void *shmaddr = shmat(shmid, (void *)0, 0);
-    if(shmaddr == -1)
-    {
-        perror("Error in attach in reader");
-        exit(-1);
-    }
-    while(strcmp((char*) shmaddr, "quit"))
-    {
-        sleep(5);
-        printf("\nData found = %s\n", (char*) shmaddr);
-    }
+    if (signum == SIGUSR1){
+        /*if (shmaddr =! NULL){
+        conv(shmaddr->buff);
 
-    printf("\nAbout to destroy the shared memory area !\n");
-    shmctl(shmid, IPC_RMID, (struct shmid_ds*)0);
-}
+        printf("\nData found---------------------------------- = %s\n",shmaddr->buff);
 
+        kill(shmaddr->clientpid,SIGUSR2);
+        rcvfromClient = 1;
+    }
+        else{
+            printf("\nStill Nulllllllll");
+        }*/
 
-void writer(int shmid)
-{
-    void *shmaddr = shmat(shmid, (void *)0, 0);
-    if(shmaddr == -1)
-    {
-        perror("Error in attach in writer");
-        exit(-1);
     }
-    else
-    {
-        printf("\nShared memory attached at address %x\n", shmaddr);
-        strcpy((char*) shmaddr, "Initial string!");
-    }
-    while(1)
-    {
-        scanf("%s", (char*) shmaddr);
-        if(!strcmp((char*) shmaddr, "quit"))
-            break;
-    }
-    shmdt(shmaddr);
 }
 
 int main()
 {
-
     // Server code
-
-    int shmid, pid;
-    char* shm;
-    char* s;
+    pid_t srvPID = getpid();
+    int shmid;
     key_t key = 5000;
 
+    // declaring the signal used by the client to inform the server that the client has write a msg 
+    // SIGUSR1 >>> Server
+    signal(SIGUSR1, handler);
+
+
     // create shared memory segment
-    shmid = shmget(key, 4096, IPC_CREAT|0644);
+    shmid = shmget(key, sizeof(struct sharedMemory), IPC_CREAT|0644);
 
     if(shmid == -1){
         perror("Error in create");
@@ -102,7 +88,7 @@ int main()
     
     
     // attach the Server segment to our space
-    void *shmaddr = shmat(shmid, (void *)0, 0);
+    shmaddr = (struct sharedMemory*) shmat(shmid, (void *)0, 0);
       if(shmaddr == -1)
     {
         perror("Error in attach in reader");
@@ -110,14 +96,30 @@ int main()
     }
     printf("\nShared memory -- Server attached at address %x\n", shmaddr);
 
-    sleep(10);
+    //sleep(10);
 
-    // read client input and process it
-    char inputString[256];
-    printf("\nData found = %s\n", (char*) shmaddr);
-    //printf("\nData found = %s\n", (char*) inputString);
+    // prcess id of server
+    shmaddr->serverpid = srvPID;
+
+    while(1){
+        // read client input and process it
+        printf("\nData found = %s\n",shmaddr->buff);
+
+        
+        // conver the msg // processing
+        //conv(shmaddr->buff);
+        //kill(shmaddr->clientpid, SIGUSR2);
 
 
+    }
+    
+
+    
+    // send signal :: send to client that msg finished processing
+
+
+    // detach server
+    shmdt((void*)shmaddr); 
 
     return 0;
 }
