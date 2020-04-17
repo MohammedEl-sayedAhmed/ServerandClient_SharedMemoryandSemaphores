@@ -109,6 +109,8 @@ int main()
     }
     printf("\nShared memory -- Server attached at address %x\n", shmaddr);
 
+    sleep(20);
+
     // read client input and process it
     char inputString[256];
     printf("\nData found = %s\n", (char*) shmaddr);

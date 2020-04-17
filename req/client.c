@@ -121,9 +121,13 @@ int main()
 
     // add some input user string
     char inputString[256];
+
+    printf("Enter your message: ");
+    scanf("%s", (char*) shmaddr);
+
     
 
-    while (1){
+    /*while (1){
         sleep(1);
 
         printf("Enter your message: ");
@@ -138,7 +142,7 @@ int main()
             continue;
         }
         
-    }
+    }*/
     shmdt((void*)shmaddr); 
     
 
