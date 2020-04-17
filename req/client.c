@@ -91,8 +91,11 @@ int main()
 
     int shmid;
 
+    key_t key = 5000;
+
+
     // create shared memory segment
-    shmid = shmget(IPC_PRIVATE, 4096, 0644);
+    shmid = shmget(key, 4096, 0644);
 
     if(shmid == -1){
         perror("Error in create");

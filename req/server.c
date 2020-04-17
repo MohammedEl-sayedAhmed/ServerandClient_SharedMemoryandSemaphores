@@ -86,9 +86,10 @@ int main()
     int shmid, pid;
     char* shm;
     char* s;
+    key_t key = 5000;
 
     // create shared memory segment
-    shmid = shmget(IPC_PRIVATE, 4096, IPC_CREAT|0644);
+    shmid = shmget(key, 4096, IPC_CREAT|0644);
 
     if(shmid == -1){
         perror("Error in create");
@@ -109,7 +110,7 @@ int main()
     }
     printf("\nShared memory -- Server attached at address %x\n", shmaddr);
 
-    sleep(20);
+    sleep(10);
 
     // read client input and process it
     char inputString[256];
