@@ -89,19 +89,8 @@ int main()
 
     while(isExit ==0){
         //sleep(2);
-        char temp[100]; 
 
-        scanf("%s", temp);
-        //scanf("%s", shmaddr->buff);
-
-        if(!strcmp((char*) temp, "^C")){
-            printf("\nbahbd nooooowwwww\n");
-            raise(SIGINT);
-        }
-        else{
-            strcpy(shmaddr->buff, temp);
-        }
-
+        scanf("%s", shmaddr->buff);
         kill(shmaddr->serverpid , SIGUSR1);
         while (rcvfromServer != 1){
             
