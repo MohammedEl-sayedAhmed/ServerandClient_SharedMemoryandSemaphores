@@ -34,7 +34,7 @@ to RUN
 3 - run the make file >> $ make \
 4 - open 1 terminal for server and N terminalS for clientS \
 5 -  run >> $ ./server.out in one terminal \
-6 - run >> $ ./client.out in other terminal \
+6 - run >> $ ./client.out in other terminal 
 
 
 
