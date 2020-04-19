@@ -28,7 +28,7 @@ Github link for the repo
 
 https://github.com/MohammedEl-sayedAhmed/ServerandClient_SharedMemoryandSemaphores
 
-to RUN
+to RUN \
 1 - clone the repo\
 2 - ~ cd req/ \
 3 - run the make file >> $ make \
