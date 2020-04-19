@@ -1,4 +1,5 @@
-# Write a C program that simulate a server process and several client processes that can
+# Task
+Write a C program that simulate a server process and several client processes that can
 communicate together. The server accepts a string from a client, converts the upper case letters
 to lower case letters and vise versa, then it sends the it back to the client.
 
@@ -34,7 +35,7 @@ to RUN \
 3 - run the make file >> $ make \
 4 - open 1 terminal for server and N terminalS for clientS \
 5 -  run >> $ ./server.out in one terminal \
-6 - run >> $ ./client.out in other terminal \
+6 - run >> $ ./client.out in other terminal 
 
 # Note 
 In order to test multiple clients you can uncomment line 125 in server.c [ sleep(20) ], otherwise comment it to work normally-- Trust me it is working fine with multiple clients you don't have to test it
