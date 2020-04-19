@@ -29,10 +29,11 @@ struct sharedMemory {
 struct sharedMemory* shmaddr; 
 
 
+             ////                            ///////   
+             ////    S E M A P H O R E S     ///////                     
+             ////                            ///////  
 
-///////   /////////////          \\\\\\/
-///////   S E M A P H O R E S    \\\\\\/
-///////   /////////////          \\\\\\/
+
 /* arg for semctl system calls. */
 union Semun
 {
@@ -54,13 +55,6 @@ int create_sem(int key)
         perror("Error in create sem");
         exit(-1);
     }
-
-    //semun.val = initial_value;  /* initial value of the semaphore, Binary semaphore */
-    /*if(semctl(sem, 0, SETVAL, semun) == -1)
-    {
-        perror("Error in semctl");
-        exit(-1);
-    }*/
     
     return sem;
 }
@@ -111,7 +105,7 @@ void handler(int signum){
 
     if (signum == SIGUSR2){
 
-        printf("\nThe server has finished processing tha data  = %s\n",shmaddr->buff);
+        printf("\nThe server has finished processing tha data, NEW DATA IS   = %s\n",shmaddr->buff);
         rcvfromServer = 1;
         
     }
@@ -136,17 +130,15 @@ int main()
     union Semun semun;
 
     int sem1 = create_sem(4000);
-    //int sem2 = create_sem(IPC_PRIVATE, 0);
-    //int sem3 = create_sem(IPC_PRIVATE, 0);
-    //int sem4 = create_sem(IPC_PRIVATE, 0);
 
     struct sembuf DOWNSemapohre;
     struct sembuf UPSemapohre;
 
 
-    
-    
-    // create shared memory segment
+             ////                               ///////   
+             ////   S H A R E D M E M O R Y     ///////                     
+             ////                               ///////  
+
     shmid = shmget(key, sizeof(struct sharedMemory), IPC_CREAT|0644);
 
     if(shmid == -1){
@@ -169,22 +161,17 @@ int main()
     }
     printf("\nShared memory -- Client attached at address %x\n", shmaddr);
 
-    // prcess id of server
-    //shmaddr->clientpid = cliPID;
-
 
     // declaring the signal used by the client to inform the server that the client has write a msg 
     // SIGUSR2 >>> Client
     signal(SIGUSR2, handler);
     signal(SIGINT,exitHandler);
 
-    printf("Enter your message: \n");
-
+    printf("Enter your message: ");
 
     while(isExit ==0){
-        //sleep(2);
 
-        /// H A B D C L I E N T //
+        /// MULTIPLE C L I E N T HANDLING //
         
         DOWNSemapohre = down(sem1);
         //printf("Enter your message: \n");
@@ -194,14 +181,11 @@ int main()
         kill(shmaddr->serverpid , SIGUSR1);
 
 
-        while (rcvfromServer != 1){
-            
-        }
+        while (rcvfromServer != 1){}
         rcvfromServer = 0;
         UPSemapohre = up(sem1);
-        printf("Enter your message: \n");
+        printf("Enter your message: ");
       
-
     }
 
     // detach client

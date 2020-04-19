@@ -29,10 +29,9 @@ struct sharedMemory {
 
 struct sharedMemory* shmaddr = NULL;
 
-///////   /////////////          \\\\\\/
-///////   S E M A P H O R E S    \\\\\\/
-///////   /////////////          \\\\\\/
-/* arg for semctl system calls. */
+             ////                            ///////   
+             ////    S E M A P H O R E S     ///////                     
+             ////                            ///////  
 
 /* arg for semctl system calls. */
 union Semun
@@ -123,11 +122,9 @@ void handler(int signum){
 
     if(signum == SIGUSR1){
         
-        sleep(20);
+        sleep(20); // --------------------------------------------------------------------------------------- >>>>>> COMMENT/UNCOMMENT to test multiple clients
         conv(shmaddr->buff);
-        printf("\nData found---------------------------------- = %s\n",shmaddr->buff);
-
-        //rcvfromClient = 1;
+        //printf("\nData found---------------------------------- = %s\n",shmaddr->buff);
         kill(shmaddr->clientpid, SIGUSR2);
                  
     }
@@ -135,8 +132,7 @@ void handler(int signum){
 
 void exitHandler(int signum){
      
-    isExit = 1;
-    
+    isExit = 1;  
 }
     
 
@@ -149,19 +145,16 @@ int main()
 
     
     // S E M A P H O R E S 
-    //union Semun semun;
-
     int sem1 = create_sem(4000, 0);
-    int sem2 = create_sem(IPC_PRIVATE, 0);
-    //int sem3 = create_sem(IPC_PRIVATE, 0);
-    //int sem4 = create_sem(IPC_PRIVATE, 0);
-
 
     struct sembuf DOWNSemapohre;
     struct sembuf UPSemapohre;
 
 
-    // create shared memory segment
+             ////                               ///////   
+             ////   S H A R E D M E M O R Y     ///////                     
+             ////                               ///////  
+
     shmid = shmget(key, sizeof(struct sharedMemory), IPC_CREAT|0644);
 
     if(shmid == -1){
@@ -183,20 +176,15 @@ int main()
     }
     printf("\nShared memory -- Server attached at address %x\n", shmaddr);
     
-   
-
     // prcess id of server
     shmaddr->serverpid = srvPID;
 
     UPSemapohre = up(sem1);
 
-    printf("\nData found---------------------------------- = %s\n",shmaddr->buff);
-
     // declaring the signal used by the client to inform the server that the client has write a msg 
     // SIGUSR1 >>> Server
     signal(SIGUSR1, handler);
     signal(SIGINT,exitHandler);
-
 
     while(isExit ==0){}
 
