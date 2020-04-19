@@ -22,3 +22,19 @@ terminated by using Ctrl+C (SIGINT).
 The server creates the shared resources and the clients use (retrieve/get) them. When the
 server is terminated (by SIGINT), all the shared resources must be deleted as well. (Assume the
 server always exits after all the clients!)
+
+# How to RUN
+Github link for the repo
+
+https://github.com/MohammedEl-sayedAhmed/ServerandClient_SharedMemoryandSemaphores
+
+to RUN
+1 - clone the repo
+2 - ~ cd req/
+3 - run the make file >> $ make
+4 - open 1 terminal for server and N terminalS for clientS 
+5 -  run >> $ ./server.out in one terminal 
+6 - run >> $ ./client.out in other terminal 
+
+
+
